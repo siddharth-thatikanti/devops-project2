@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 node_modules/
 dist/
 .env
@@ -9,3 +10,14 @@ coverage/
 terraform.tfstate*
 .terraform/
 kubeconfig
+=======
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+terraform.tfvars
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+>>>>>>> dff3dc8 (Configured IAC)
