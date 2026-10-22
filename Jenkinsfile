@@ -1,13 +1,14 @@
-
+```groovy
 pipeline {
     agent any
 
     environment {
-        DOCKERHUB_USER = 'sidduthatikanti@93'
+        DOCKERHUB_USER = 'your-dockerhub-username'
         IMAGE_TAG = "${BUILD_NUMBER}"
     }
 
     stages {
+
         stage('Checkout') {
             steps {
                 checkout scm
@@ -29,8 +30,13 @@ pipeline {
         stage('Build Docker Images') {
             steps {
                 sh '''
-                    docker build -t $DOCKERHUB_USER/mern-frontend:$IMAGE_TAG ./frontend
-                    docker build -t $DOCKERHUB_USER/mern-backend:$IMAGE_TAG ./backend
+                    docker build \
+                      -t ${DOCKERHUB_USER}/mern-frontend:${IMAGE_TAG} \
+                      ./frontend
+
+                    docker build \
+                      -t ${DOCKERHUB_USER}/mern-backend:${IMAGE_TAG} \
+                      ./backend
                 '''
             }
         }
@@ -46,11 +52,16 @@ pipeline {
                 ]) {
                     sh '''
                         set +x
-                        echo "$DOCKER_TOKEN" | docker login \
-                          -u "$DOCKER_USER" --password-stdin
 
-                        docker push $DOCKERHUB_USER/mern-frontend:$IMAGE_TAG
-                        docker push $DOCKERHUB_USER/mern-backend:$IMAGE_TAG
+                        echo "$DOCKER_TOKEN" | docker login \
+                          --username "$DOCKER_USER" \
+                          --password-stdin
+
+                        docker push \
+                          ${DOCKERHUB_USER}/mern-frontend:${IMAGE_TAG}
+
+                        docker push \
+                          ${DOCKERHUB_USER}/mern-backend:${IMAGE_TAG}
                     '''
                 }
             }
@@ -63,11 +74,12 @@ pipeline {
         }
 
         success {
-            echo 'Docker images built and pushed successfully!'
+            echo 'CI SUCCESS: Images built and pushed to Docker Hub.'
         }
 
         failure {
-            echo 'Pipeline failed. Check Console Output.'
+            echo 'CI FAILED: Check the Console Output for the failing stage.'
         }
     }
 }
+```
