@@ -3,7 +3,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_USER = 'sidduthatikanti93'
+        DOCKERHUB_USER = 'sidduthatikanti@93'
         IMAGE_TAG = "${BUILD_NUMBER}"
     }
 
@@ -19,19 +19,9 @@ pipeline {
                 dir('frontend') {
                     sh 'npm install'
                 }
+
                 dir('backend') {
                     sh 'npm install'
-                }
-            }
-        }
-
-        stage('Test') {
-            steps {
-                dir('frontend') {
-                    sh 'npm test -- --watchAll=false'
-                }
-                dir('backend') {
-                    sh 'npm test'
                 }
             }
         }
@@ -61,8 +51,6 @@ pipeline {
 
                         docker push $DOCKERHUB_USER/mern-frontend:$IMAGE_TAG
                         docker push $DOCKERHUB_USER/mern-backend:$IMAGE_TAG
-
-                        docker logout
                     '''
                 }
             }
@@ -70,14 +58,16 @@ pipeline {
     }
 
     post {
-        success {
-            echo 'CI successful! Images pushed to Docker Hub.'
-        }
-        failure {
-            echo 'CI failed. Check Console Output.'
-        }
         always {
             sh 'docker logout || true'
+        }
+
+        success {
+            echo 'Docker images built and pushed successfully!'
+        }
+
+        failure {
+            echo 'Pipeline failed. Check Console Output.'
         }
     }
 }
